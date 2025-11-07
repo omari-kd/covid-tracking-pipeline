@@ -2,8 +2,8 @@ name: Daily COVID ETL
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Runs every day at 6:00 UTC
-  workflow_dispatch:     # Allow manual trigger
+    - cron: "0 6 * * *" # Runs every day at 6:00 UTC
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   run-etl:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
@@ -34,7 +34,7 @@ jobs:
             dbname: "${{ secrets.NEON_DBNAME }}"
             user: "${{ secrets.NEON_USER }}"
             password: "${{ secrets.NEON_PASSWORD }}"
-            sslmode: "${{ secrets.NEON_SSLMODE }}"
+            sslmode: "require"
           EOF
 
       - name: Run ETL
