@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p src/config
           cat > src/config/config.yaml <<EOF
-          api_url: "https://api.covidtracking.com/v1/us/daily.json"
+          api_url: "https://data.cdc.gov/resource/vbim-akqf.json"
           database:
             host: "${{ secrets.NEON_HOST }}"
             port: "${{ secrets.NEON_PORT }}"

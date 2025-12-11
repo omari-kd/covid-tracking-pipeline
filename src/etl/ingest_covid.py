@@ -8,37 +8,57 @@ def fetch_covid_data(api_url):
     response.raise_for_status()
     return response.json()
 
+def parse_date(date_str):
+    if not date_str:
+        return None
+    try:
+        return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f").date()
+    except ValueError:
+        return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S").date()
+
 def format_record(record):
     """
     Convert API dates and ensure missing values become None.
     """
-    date_str = str(record.get("date"))  # e.g., 20210310
-    date = datetime.datetime.strptime(date_str, "%Y%m%d").date()
+    # date_str = str(record.get("date"))  # e.g., 20210310
+    # date = datetime.datetime.strptime(date_str, "%Y%m%d").date()
+    # date_str = record.get("cdc_case_earliest_dt")  # e.g., "2020-10-25T00:00:00.000"
+    # date = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f").date()
+
 
     return (
-        date,
-        record.get("positive"),
-        record.get("negative"),
-        record.get("hospitalizedCurrently"),
-        record.get("death"),
-        record.get("totalTestResults"),
-        record.get("dataQualityGrade")
+        parse_date(record.get("cdc_case_earliest_dt")),
+        parse_date(record.get("cdc_report_dt")),
+        parse_date(record.get("pos_spec_dt")),
+        record.get("current_status"),
+        record.get("sex"),
+        record.get("age_group"),
+        record.get("race_ethnicity_combined"),
+        record.get("hosp_yn"),
+        record.get("icu_yn"),
+        record.get("death_yn"),
+        record.get("medcond_yn")
     )
 
 def insert_data(conn, records):
     sql = """
         INSERT INTO covid_daily (
-            date, positive, negative, hospitalized_currently,
-            death, total_test_results, data_quality_grade
+            cdc_case_earliest_dt, cdc_report_dt, pos_spec_dt, current_status,
+            sex, age_group, race_ethnicity_combined, hosp_yn, icu_yn, death_yn,medcond_yn
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (date) DO UPDATE SET
-            positive = EXCLUDED.positive,
-            negative = EXCLUDED.negative,
-            hospitalized_currently = EXCLUDED.hospitalized_currently,
-            death = EXCLUDED.death,
-            total_test_results = EXCLUDED.total_test_results,
-            data_quality_grade = EXCLUDED.data_quality_grade;
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (cdc_case_earliest_dt) DO UPDATE SET
+            cdc_case_earliest_dt = EXCLUDED.cdc_case_earliest_dt,
+            cdc_report_dt = EXCLUDED.cdc_report_dt,
+            pos_spec_dt = EXCLUDED.pos_spec_dt,
+            current_status = EXCLUDED.current_status,
+            sex = EXCLUDED.sex,
+            age_group = EXCLUDED.age_group,
+            race_ethnicity_combined = EXCLUDED.race_ethnicity_combined,
+            hosp_yn = EXCLUDED.hosp_yn,
+            icu_yn = EXCLUDED.icu_yn,
+            death_yn = EXCLUDED.death_yn,
+            medcond_yn = EXCLUDED.medcond_yn
     """
 
     cur = conn.cursor()

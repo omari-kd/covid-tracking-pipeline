@@ -4,7 +4,7 @@ config = load_config("src/config/config.yaml")
 conn = get_db_connection(config)
 cur = conn.cursor()
 
-with open("src/sql/create_cleaned_table.sql") as f:
+with open("src/sql/create_cleaned_tables.sql") as f:
     cur.execute(f.read())
 
 conn.commit()

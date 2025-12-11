@@ -4,52 +4,61 @@ from psycopg2.extras import execute_batch
 import numpy as np
 
 def load_raw_data(conn):
-    query = "SELECT * FROM covid_daily ORDER BY date;"
+    query = "SELECT * FROM covid_daily ORDER BY cdc_case_earliest_dt;"
     return pd.read_sql(query, conn)
 
 
 def transform_data(df):
     # Replace missing values with 0 numeric values
     # df = df.fillna(0).infer_objects(copy=False)
-    df = df.fillna(0).infer_objects(copy=False)
+    # df = df.fillna(0).infer_objects(copy=False)
     # Calculate metrics (avoid division errors)
-    df['positivity_rate'] = df['positive'] / df['total_test_results'].replace(0, pd.NA)
-    df['case_fatality_rate'] = df['death'] / df['positive'].replace(0, pd.NA)
+    # df['positivity_rate'] = df['positive'] / df['total_test_results'].replace(0, pd.NA)
+    # df['case_fatality_rate'] = df['death'] / df['positive'].replace(0, pd.NA)
 
     # Fill any NaN that appear from divisions with 0 again
-    df = df.fillna(0)
+    # df = df.fillna(0)
+    # Replace NaN strings with None — NOT zero
+    df = df.replace({np.nan: None})
     return df
 
 def save_cleaned_data(conn, df):
     cur = conn.cursor()
 
     insert_sql = """
-        INSERT INTO covid_daily_cleaned (
-        date, positive, negative, hospitalized_currently, death,
-        total_test_results, positivity_rate, case_fatality_rate
+        INSERT INTO covid_daily (
+            cdc_case_earliest_dt, cdc_report_dt, pos_spec_dt, current_status,
+            sex, age_group, race_ethnicity_combined, hosp_yn, icu_yn, death_yn,medcond_yn
         )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-        ON CONFLICT (date) DO UPDATE SET
-            positive = EXCLUDED.positive,
-            negative = EXCLUDED.negative,
-            hospitalized_currently = EXCLUDED.hospitalized_currently,
-            death = EXCLUDED.death,
-            total_test_results = EXCLUDED.total_test_results,
-            positivity_rate = EXCLUDED.positivity_rate,
-            case_fatality_rate = EXCLUDED.case_fatality_rate;
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (cdc_case_earliest_dt) DO UPDATE SET
+            cdc_case_earliest_dt = EXCLUDED.cdc_case_earliest_dt,
+            cdc_report_dt = EXCLUDED.cdc_report_dt,
+            pos_spec_dt = EXCLUDED.pos_spec_dt,
+            current_status = EXCLUDED.current_status,
+            sex = EXCLUDED.sex,
+            age_group = EXCLUDED.age_group,
+            race_ethnicity_combined = EXCLUDED.race_ethnicity_combined,
+            hosp_yn = EXCLUDED.hosp_yn,
+            icu_yn = EXCLUDED.icu_yn,
+            death_yn = EXCLUDED.death_yn,
+            medcond_yn = EXCLUDED.medcond_yn
     """
 
     # Explicitly pick only the columns that match the sql
     df = df[
         [
-            "date",
-            "positive",
-            "negative",
-            "hospitalized_currently",
-            "death",
-            "total_test_results",
-            "positivity_rate",
-            "case_fatality_rate",
+            "cdc_case_earliest_dt",
+            "cdc_report_dt",
+            "pos_spec_dt",
+            "current_status",
+            "sex",
+            "age_group",
+            "race_ethnicity_combined",
+            "hosp_yn",
+            "icu_yn",
+            "death_yn",
+            "medcond_yn"
         ]
     ]
      # Convert dataframe to list of tuples with Python-native types and None for NaN
