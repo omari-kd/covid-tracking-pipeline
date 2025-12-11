@@ -26,7 +26,7 @@ def save_cleaned_data(conn, df):
     cur = conn.cursor()
 
     insert_sql = """
-        INSERT INTO covid_daily (
+        INSERT INTO covid_daily_cleaned (
             cdc_case_earliest_dt, cdc_report_dt, pos_spec_dt, current_status,
             sex, age_group, race_ethnicity_combined, hosp_yn, icu_yn, death_yn,medcond_yn
         )
