@@ -13,25 +13,27 @@ This endpoint provides case-level data for confirmed and probable COVID-19 cases
 
 ## 📁 Project Structure
 
+```text
 ├── .github/workflows/
-│ └── daily_etl.yml # GitHub Actions workflow (scheduled ingestion)
+│   └── daily_etl.yml               # GitHub Actions workflow (scheduled ingestion)
 ├── logs/
-│ └── etl.log # Runtime logs
+│   └── etl.log                     # Runtime logs
 ├── notebooks/
-│ └── exploratory_analysis.ipynb
+│   └── exploratory_analysis.ipynb
 ├── scripts/
-│ └── run_daily.sh # Shell wrapper to run ETL locally
+│   └── run_daily.sh                # Shell wrapper to run ETL locally
 ├── src/
-│ ├── config/
-│ │ └── config.yaml # Pipeline configuration (API, DB credentials)
-│ ├── etl/
-│ │ ├── ingest_covid.py # Extract & load raw CDC data
-│ │ ├── transform_covid.py # Transform cleaned dataset
-│ │ └── utils.py # Shared helpers (logging, db connections)
-│ └── sql/
-│ ├── create_tables.sql # Raw + staging table definitions
-│ └── create_cleaned_tables.sql # Final analytics tables
+│   ├── config/
+│   │   └── config.yaml             # Pipeline configuration (API, DB credentials)
+│   ├── etl/
+│   │   ├── ingest_covid.py         # Extract & load raw CDC data
+│   │   ├── transform_covid.py      # Transform cleaned dataset
+│   │   └── utils.py                # Shared helpers (logging, db connections)
+│   └── sql/
+│       ├── create_tables.sql       # Raw + staging table definitions
+│       └── create_cleaned_tables.sql # Final analytics tables
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
-└── setup_db.py # Initializes Neon database schema
+└── setup_db.py                     # Initializes Neon database schema
+```
