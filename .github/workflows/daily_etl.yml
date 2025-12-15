@@ -2,7 +2,7 @@ name: Daily COVID ETL
 
 on:
   schedule:
-    - cron: "0 6 * * *" # Runs every day at 6:00 UTC
+    - cron: "0 6 * * *" # Every day at 06:00 UTC
   workflow_dispatch: # Allow manual trigger
 
 jobs:
@@ -39,5 +39,5 @@ jobs:
 
       - name: Run ETL
         run: |
-          python3 src/etl/ingest_covid.py
-          python3 src/etl/transform_covid.py
+          python3 -m src.etl.ingest_covid
+          python3 -m src.etl.transform_covid

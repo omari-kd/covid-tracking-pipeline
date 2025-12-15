@@ -1,8 +1,18 @@
 import requests
 import datetime
-from utils import load_config, get_db_connection
+from .utils import load_config, get_db_connection
 from psycopg2.extras import execute_batch
+import logging
+from src.logging_config import setup_logging
+import sys
+import os
 
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+setup_logging()
+logger = logging.getLogger(__name__)
+
+logger.info("Starting COVID data ingestion")
 def fetch_covid_data(api_url):
     response = requests.get(api_url)
     response.raise_for_status()

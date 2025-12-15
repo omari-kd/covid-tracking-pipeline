@@ -1,7 +1,13 @@
 import pandas as pd
-from utils import load_config, get_db_connection
+from .utils import load_config, get_db_connection
 from psycopg2.extras import execute_batch
 import numpy as np
+import logging
+from src.logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
+
 
 def load_raw_data(conn):
     query = "SELECT * FROM covid_daily ORDER BY cdc_case_earliest_dt;"
@@ -86,17 +92,17 @@ def main():
     config = load_config("src/config/config.yaml")
     conn = get_db_connection(config)
 
-    print("Loading raw covid data...")
+    logger.info("Loading raw covid data...")
     df_raw = load_raw_data(conn)
 
-    print("Transforming data...")
+    logger.info("Transforming data...")
     df_clean = transform_data(df_raw)
 
-    print("Saving cleaned data...")
+    logger.info("Saving cleaned data...")
     save_cleaned_data(conn, df_clean)
 
     conn.close()
-    print("Transformation Complete! Cleaned data is ready.")
+    logger.info("Transformation Complete! Cleaned data is ready.")
 
 if __name__ == "__main__":
     main()
