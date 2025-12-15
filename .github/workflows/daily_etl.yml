@@ -39,5 +39,5 @@ jobs:
 
       - name: Run ETL
         run: |
-          python3 src/etl/ingest_covid.py
-          python3 src/etl/transform_covid.py
+          python3 -m src.etl.ingest_covid
+          python3 -m src.etl.transform_covid
